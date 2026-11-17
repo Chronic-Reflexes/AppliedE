@@ -198,9 +198,10 @@ public final class EMCStorage implements MEStorage {
                 return 0;
             }
 
+            totalEmc = itemEmc.multiply(BigInteger.valueOf(amount));
             var providers = new ArrayList<>(service.getProviders());
             Collections.shuffle(providers);
-            distributeEmc(itemEmc.multiply(BigInteger.valueOf(amount)), providers);
+            distributeEmc(totalEmc, providers);
             service.syncEmc();
 
             if (mayLearn) {
@@ -268,13 +269,13 @@ public final class EMCStorage implements MEStorage {
                 return 0;
             }
 
-            var emcToWithdraw = itemEmc.multiply(BigInteger.valueOf(amount));
+            availableEmc = itemEmc.multiply(BigInteger.valueOf(amount));
             var withdrawn = BigInteger.ZERO;
 
-            while (!providers.isEmpty() && withdrawn.compareTo(emcToWithdraw) < 0) {
+            while (!providers.isEmpty() && withdrawn.compareTo(availableEmc) < 0) {
                 Collections.shuffle(providers);
 
-                var toWithdraw = emcToWithdraw.subtract(withdrawn);
+                var toWithdraw = availableEmc.subtract(withdrawn);
                 var divisor = BigInteger.valueOf(providers.size());
                 var quotient = toWithdraw.divide(divisor);
                 var remainder = toWithdraw.remainder(divisor).longValue();
